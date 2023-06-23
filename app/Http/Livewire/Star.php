@@ -10,7 +10,7 @@ use Livewire\WithFileUploads;
 class Star extends Component
 {
     use WithFileUploads;
-    public $stars, $nom, $prenom, $description, $image, $starID, $updateStar = false, $addStar = false;
+    public $stars, $nom, $prenom, $description, $image, $starID, $updateStar = false, $addStar = false, $selectedStar;
     /**
      * delete action listener
      */
@@ -174,5 +174,8 @@ class Star extends Component
             session()->flash('error',"Something goes wrong!!");
         }
     }
-
+    public function selectStar($id)
+    {
+        $this->selectedStar = Stars::find($id);
+    }
 }

@@ -10,8 +10,9 @@
 
                         <ul class="mt-6 space-y-1">
                             @foreach ($stars as $star)
-                                <li class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"> {{ $star->nom . ' ' . $star->prenom }} </a></li>
-
+                                <li class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700">
+                                    <a wire:click="selectStar({{ $star->id }})" class="cursor-pointer">{{ $star->nom . ' ' . $star->prenom }}</a>
+                                </li>
                             @endforeach
                         </ul>
                     </div>
@@ -33,6 +34,14 @@
                     @if($updateStar)
                         @include('livewire.update')
                     @endif
+                        @if ($selectedStar)
+                            <div class="card">
+                                <h3>{{ $selectedStar->nom . ' ' . $selectedStar->prenom }}</h3>
+                                <img src="{{ asset('storage/' . $selectedStar->image) }}" alt="Star Image" style="width: 100px">
+                                <p>{{ $selectedStar->description }}</p>
+                                <!-- Affichez d'autres informations de la star ici -->
+                            </div>
+                        @endif
         </div>
 </div>
 
