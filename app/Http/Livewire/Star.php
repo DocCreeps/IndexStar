@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Livewire;
-
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use App\Models\Star as Stars;
@@ -10,7 +9,7 @@ use Livewire\WithFileUploads;
 class Star extends Component
 {
     use WithFileUploads;
-    public $stars, $nom, $prenom, $description, $image, $updateStar = false, $addStar = false, $selectedStar;
+    public $stars, $nom, $prenom, $description, $image, $updateStar = false,$starID, $addStar = false, $selectedStar;
     /**
      * delete action listener
      */
@@ -101,7 +100,7 @@ class Star extends Component
                 $this->prenom = $star->prenom;
                 $this->description = $star->description;
                 $this->image = $star->image;
-                $this->selectedStar = $star->star;
+                $this->starID = $star->id;
                 $this->updateStar = true;
                 $this->addStar = false;
             }
@@ -120,18 +119,17 @@ class Star extends Component
             'nom' => 'required',
             'prenom' => 'required',
             'description' => 'required',
-            'image' => 'required|mimes:png,jpg,jpeg'
+            'image' => 'nullable'
         ]);
-
         try {
-            $star = Stars::findOrFail($this->selectedStar);
+            $star = Stars::findOrFail($this->starID);
 
             $star->nom = $this->nom;
             $star->prenom = $this->prenom;
             $star->description = $this->description;
 
             // Vérifier si une nouvelle image est téléchargée
-            if ($this->image) {
+            if ($this->image && !is_string($this->image)) {
                 // Supprimer l'ancienne image du stockage
                 Storage::disk('public')->delete($star->image);
 
@@ -141,11 +139,12 @@ class Star extends Component
             }
 
             $star->save();
-            session()->flash('success','Star Updated Successfully!!');
+            session()->flash('success', 'Star Updated Successfully!!');
             $this->resetFields();
             $this->updateStar = false;
+            $this->redirect('/');
         } catch (\Exception $ex) {
-            session()->flash('error','Something goes wrong!!');
+            session()->flash('error', 'Something went wrong!!');
         }
     }
 
