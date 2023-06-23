@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Livewire;
+use Exception;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use App\Models\Star as Stars;
@@ -80,7 +81,7 @@ class Star extends Component
             session()->flash('success','Star Created Successfully!!');
             $this->resetFields();
             $this->addStar = false;
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             session()->flash('error','Something goes wrong!!');
         }
     }
@@ -92,7 +93,7 @@ class Star extends Component
      */
     public function editStar($id){
         try {
-            $star = Stars::findOrFail($id);
+            $star = Stars::find($id);
             if( !$star) {
                 session()->flash('error','Star not found');
             } else {
@@ -104,7 +105,7 @@ class Star extends Component
                 $this->updateStar = true;
                 $this->addStar = false;
             }
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             session()->flash('error','Something goes wrong!!');
         }
 
@@ -122,7 +123,7 @@ class Star extends Component
             'image' => 'nullable'
         ]);
         try {
-            $star = Stars::findOrFail($this->starID);
+            $star = Stars::find($this->starID);
 
             $star->nom = $this->nom;
             $star->prenom = $this->prenom;
@@ -143,7 +144,7 @@ class Star extends Component
             $this->resetFields();
             $this->updateStar = false;
             $this->redirect('/');
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             session()->flash('error', 'Something went wrong!!');
         }
     }
@@ -169,7 +170,7 @@ class Star extends Component
         try{
             Stars::find($id)->delete();
             session()->flash('success',"Star Deleted Successfully!!");
-        }catch(\Exception $e){
+        }catch(Exception $e){
             session()->flash('error',"Something goes wrong!!");
         }
        redirect()->to('/');
