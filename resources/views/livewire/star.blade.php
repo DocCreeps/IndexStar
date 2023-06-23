@@ -35,12 +35,7 @@
                         @include('livewire.update')
                     @endif
                         @if ($selectedStar)
-                            <div class="card">
-                                <h3>{{ $selectedStar->nom . ' ' . $selectedStar->prenom }}</h3>
-                                <img src="{{ asset('storage/' . $selectedStar->image) }}" alt="Star Image" style="width: 100px">
-                                <p>{{ $selectedStar->description }}</p>
-                                <!-- Affichez d'autres informations de la star ici -->
-                            </div>
+                            @include('livewire.info')
                         @endif
         </div>
 </div>
