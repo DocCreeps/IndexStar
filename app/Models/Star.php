@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Star extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'nom', 'prenom', 'description', 'image'
+        ];
+    public $timestamps = true;
 }
