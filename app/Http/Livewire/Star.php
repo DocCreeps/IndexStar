@@ -2,12 +2,14 @@
 
 namespace App\Http\Livewire;
 
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
-use App\Models\Star;
+use App\Models\Star as Stars;
+use Livewire\WithFileUploads;
 
-class StarComponent extends Component
+class Star extends Component
 {
-
+    use WithFileUploads;
     public $stars, $nom, $prenom, $description, $image, $starID, $updateStar = false, $addStar = false;
     /**
      * delete action listener
@@ -23,7 +25,7 @@ class StarComponent extends Component
         'nom' => 'required',
         'prenom' => 'required',
         'description' => 'required',
-        'image' => 'required'
+        'image' => 'required|mimes:png,jpg,jpeg'
     ];
 
     /**
@@ -44,7 +46,7 @@ class StarComponent extends Component
      */
     public function render()
     {
-        $this->stars = Star::select('id', 'nom', 'prenom', 'description', 'image')->get();
+        $this->stars = Stars::select('id', 'nom', 'prenom', 'description', 'image')->get();
         return view('livewire.star');
     }
     /**
@@ -65,12 +67,16 @@ class StarComponent extends Component
     public function storeStar()
     {
         $this->validate();
+
         try {
-            self::create([
+            // Save and store the picture
+            $imagePath = Storage::disk('public')->putFile('images', $this->image);
+
+            Stars::create([
                 'nom' => $this->nom,
                 'prenom' => $this->prenom,
                 'description' => $this->description,
-                'image' => $this->image
+                'image' => $imagePath
             ]);
             session()->flash('success','Star Created Successfully!!');
             $this->resetFields();
@@ -87,7 +93,7 @@ class StarComponent extends Component
      */
     public function editStar($id){
         try {
-            $star = self::findOrFail($id);
+            $star = Stars::findOrFail($id);
             if( !$star) {
                 session()->flash('error','Star not found');
             } else {
@@ -110,14 +116,31 @@ class StarComponent extends Component
      */
     public function updateStar()
     {
-        $this->validate();
+        $this->validate([
+            'nom' => 'required',
+            'prenom' => 'required',
+            'description' => 'required',
+            'image' => 'required|mimes:png,jpg,jpeg'
+        ]);
+
         try {
-            self::whereId($this->starId)->update([
-                'nom' => $this->nom,
-                'prenom' => $this->prenom,
-                'description' => $this->description,
-                'image' => $this->image
-            ]);
+            $star = Stars::findOrFail($this->starID);
+
+            $star->nom = $this->nom;
+            $star->prenom = $this->prenom;
+            $star->description = $this->description;
+
+            // Vérifier si une nouvelle image est téléchargée
+            if ($this->image) {
+                // Supprimer l'ancienne image du stockage
+                Storage::disk('public')->delete($star->image);
+
+                // Téléchargement et stockage de la nouvelle image
+                $imagePath = $this->image->store('images', 'public');
+                $star->image = $imagePath;
+            }
+
+            $star->save();
             session()->flash('success','Star Updated Successfully!!');
             $this->resetFields();
             $this->updateStar = false;
@@ -145,7 +168,7 @@ class StarComponent extends Component
     public function deleteStar($id)
     {
         try{
-            self::find($id)->delete();
+            Stars::find($id)->delete();
             session()->flash('success',"Star Deleted Successfully!!");
         }catch(\Exception $e){
             session()->flash('error',"Something goes wrong!!");

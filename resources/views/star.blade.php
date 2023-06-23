@@ -18,6 +18,16 @@
 </head>
 
 <body class="antialiased">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<div class="container-fluid">
+    <a class="navbar-brand" href="/">Index Star</a>
+</div>
+</nav>
+<div class="container">
+    <div class="row justify-content-center mt-3">
+        @livewire('star')
+    </div>
+</div>
 
 @livewireScripts
 </body>
