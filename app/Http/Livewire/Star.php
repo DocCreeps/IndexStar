@@ -3,12 +3,12 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
-use App\Models\Star as Star;
+use App\Models\Star;
 
-class Star extends Component
+class StarComponent extends Component
 {
 
-    public $star, $nom, $prenom, $description, $image, $starID, $updateStar = false, $addStar = false;
+    public $stars, $nom, $prenom, $description, $image, $starID, $updateStar = false, $addStar = false;
     /**
      * delete action listener
      */
@@ -44,7 +44,7 @@ class Star extends Component
      */
     public function render()
     {
-        $this->star = self::select()->get();
+        $this->stars = Star::select('id', 'nom', 'prenom', 'description', 'image')->get();
         return view('livewire.star');
     }
     /**
